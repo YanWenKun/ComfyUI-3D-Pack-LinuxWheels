@@ -8,9 +8,15 @@ https://github.com/MrForExample/ComfyUI-3D-Pack/blob/main/requirements_post.txt
 
 [source,sh]
 ----
-git clone --depth=1 https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels.git
-
-python3 -m pip install ComfyUI-3D-Pack-LinuxWheels/*.whl
+python3 -m pip install \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v1/diff_gaussian_rasterization-0.0.0-cp311-cp311-linux_x86_64.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v1/kiui-0.2.7-py3-none-any.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v1/nvdiffrast-0.3.1-py3-none-any.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v1/pointnet2_ops-3.0.0-cp311-cp311-linux_x86_64.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v1/pytorch3d-0.7.6-cp311-cp311-linux_x86_64.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v1/simple_knn-0.0.0-cp311-cp311-linux_x86_64.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v1/torchmcubes-0.1.0-cp311-cp311-linux_x86_64.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v1/torch_scatter-2.1.2-cp311-cp311-linux_x86_64.whl
 ----
 
 ## How to build
