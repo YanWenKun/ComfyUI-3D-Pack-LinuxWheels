@@ -10,7 +10,7 @@ https://github.com/MrForExample/ComfyUI-3D-Pack/blob/main/requirements_post.txt
 ----
 git clone --depth=1 https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels.git
 
-pip3 install ComfyUI-3D-Pack-LinuxWheels/*.whl
+python3 -m pip install ComfyUI-3D-Pack-LinuxWheels/*.whl
 ----
 
 ## How to build
