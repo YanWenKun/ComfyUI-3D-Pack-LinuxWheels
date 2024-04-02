@@ -19,6 +19,8 @@ python3 -m pip install \
   https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v1/torch_scatter-2.1.2-cp311-cp311-linux_x86_64.whl
 ----
 
+Done!
+
 ## How to build
 
 You need:
@@ -34,7 +36,7 @@ installed and configured
 If you want to write a `Dockerfile` to build automatically,
 you need to modify 
 https://stackoverflow.com/questions/59691207/docker-build-with-nvidia-runtime[runtime settings]
-
+which allows GPU usage during image building
 
 ### Run a container with dev environment
 
@@ -62,38 +64,10 @@ podman run -it --rm \
   yanwk/comfyui-extras:devel-torch
 ----
 
-If you want to build the image yourself, you can find Dockerfile
-https://github.com/YanWenKun/ComfyUI-Containerfiles/blob/main/dev-torch/Dockerfile[there]
+If you want to build the builder image yourself, you can find the Dockerfile
+https://github.com/YanWenKun/ComfyUI-Containerfiles/blob/main/dev-torch/Dockerfile[here]
 
-### Build Command
-
-* A side note, I also got this warning message:
-
-====
-simple-knn/spatial.cu:23:64: warning: ‘T* at::Tensor::data() const [with T = float]’ is deprecated: Tensor.data<T>() is deprecated. Please use Tensor.data_ptr<T>() instead. 
-====
-
-It's fine to leave it. But I fixed that anyway.
-
-* I only used one compile target "6.1+PTX" to save build time. It should be running fine on Pascal and later GPUs.
-You can add more if you want to squeeze more performance (not sure).
-
-** https://arnon.dk/matching-sm-architectures-arch-and-gencode-for-various-nvidia-cards/[Arch list]
-
-[source,bash]
-----
-export TORCH_CUDA_ARCH_LIST="6.1+PTX"
-----
-
-* *[IMPORTANT]* Fix for nvcc 12.x
-** Ref: https://github.com/pybind/pybind11/issues/4606
-[source,bash]
-----
-sed -i "s/return caster.operator typename make_caster<T>::template cast_op_type<T>()/return caster/g" \
-  /usr/lib64/python3.11/site-packages/torch/include/pybind11/cast.h
-----
-
-Finally we can move on compiling
+### Preparation
 
 [source,bash]
 ----
@@ -103,7 +77,47 @@ git clone --depth=1 --no-tags \
 cd ComfyUI-3D-Pack
 
 pip install -r requirements.txt
+----
 
+* *[IMPORTANT]* Fix for nvcc 12.x
+** Ref: https://github.com/pybind/pybind11/issues/4606
+
+[source,bash]
+----
+sed -i "s/return caster.operator typename make_caster<T>::template cast_op_type<T>()/return caster/g" \
+  /usr/lib64/python3.11/site-packages/torch/include/pybind11/cast.h
+----
+
+* I only used one compile target "6.1+PTX" to save build time. It should be running fine on Pascal and later GPUs.
+You can add more if you want to squeeze more performance (not sure).
+
+** See https://arnon.dk/matching-sm-architectures-arch-and-gencode-for-various-nvidia-cards/[Arch List]
+
+[source,bash]
+----
+export TORCH_CUDA_ARCH_LIST="6.1+PTX"
+----
+
+* A side note, I also got this warning message:
+
+====
+simple-knn/spatial.cu:23:64: warning: ‘T* at::Tensor::data() const [with T = float]’ is deprecated: Tensor.data<T>() is deprecated. Please use Tensor.data_ptr<T>() instead. 
+====
+
+It's fine to leave it. But I fixed that anyway.
+
+[source,bash]
+----
+sed -i "s/data<float>()/data_ptr<float>()/g" \
+  ./simple-knn/spatial.cu
+----
+
+### Compile
+
+Finally we can move on compiling
+
+[source,bash]
+----
 pip wheel -w /root/tmp_wheels \
   ./tgs/models/snowflake/pointnet2_ops_lib
 
