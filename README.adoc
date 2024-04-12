@@ -1,6 +1,6 @@
 # Wheel files for ComfyUI-3D-Pack on Linux
 
-According to:
+This repo includes compiled Python wheel files, according to:
 
 https://github.com/MrForExample/ComfyUI-3D-Pack/blob/main/requirements_post.txt
 
@@ -9,36 +9,39 @@ https://github.com/MrForExample/ComfyUI-3D-Pack/blob/main/requirements_post.txt
 [source,sh]
 ----
 python3 -m pip install \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v1/diff_gaussian_rasterization-0.0.0-cp311-cp311-linux_x86_64.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v1/kiui-0.2.7-py3-none-any.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v1/nvdiffrast-0.3.1-py3-none-any.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v1/pointnet2_ops-3.0.0-cp311-cp311-linux_x86_64.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v1/pytorch3d-0.7.6-cp311-cp311-linux_x86_64.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v1/simple_knn-0.0.0-cp311-cp311-linux_x86_64.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v1/torchmcubes-0.1.0-cp311-cp311-linux_x86_64.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v1/torch_scatter-2.1.2-cp311-cp311-linux_x86_64.whl
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v2/diff_gaussian_rasterization-0.0.0-cp311-cp311-linux_x86_64.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v2/kiui-0.2.7-py3-none-any.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v2/nvdiffrast-0.3.1-py3-none-any.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v2/pointnet2_ops-3.0.0-cp311-cp311-linux_x86_64.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v2/pytorch3d-0.7.6-cp311-cp311-linux_x86_64.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v2/simple_knn-0.0.0-cp311-cp311-linux_x86_64.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v2/torch_scatter-2.1.2-cp311-cp311-linux_x86_64.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v2/torchmcubes-0.1.0-cp311-cp311-linux_x86_64.whl
 ----
 
-Done!
+Then try to run ComfyUI with 3D-Pack!
 
 ## How to build
 
 You need:
 
-* Linux or Docker Desktop WSL2
+* Linux with Docker/Podman
+** or Docker Desktop WSL2
 * An NVIDIA GPU
 * GPU driver installed on your host OS
 * (For Linux hosts)
 https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html[NVIDIA Container Toolkit]
 installed and configured
 
-* (Linux Optional)
-If you want to write a `Dockerfile` to build automatically,
+* (Optional, for Linux hosts)
+If you want to build automatically with a `Dockerfile`,
 you need to modify 
 https://stackoverflow.com/questions/59691207/docker-build-with-nvidia-runtime[runtime settings]
-which allows GPU usage during image building
+on your host system, which allows GPU usage during image building.
 
 ### Run a container with dev environment
+
+I use `fish` here, you can safely replace it with `bash`
 
 .Run with Docker
 [source,bash]
@@ -46,12 +49,12 @@ which allows GPU usage during image building
 docker run -it \
   --name builder \
   --gpus all \
-  yanwk/comfyui-extras:devel-torch
+  yanwk/comfyui-boot:megapak /bin/fish
 ----
 
 OR
 
-.Here's how I run with Podman
+.How I run with Podman
 [source,bash]
 ----
 podman run -it --rm \
@@ -61,13 +64,17 @@ podman run -it --rm \
   --user root --workdir /root \
   -e HTTP_PROXY=http://host.containers.internal:1081 \
   -e HTTPS_PROXY=http://host.containers.internal:1081 \
-  yanwk/comfyui-extras:devel-torch
+  docker.io/yanwk/comfyui-boot:megapak /bin/fish
 ----
 
 If you want to build the builder image yourself, you can find the Dockerfile
-https://github.com/YanWenKun/ComfyUI-Containerfiles/blob/main/dev-torch/Dockerfile[here]
+https://github.com/YanWenKun/ComfyUI-Docker/blob/main/megapak/Dockerfile[here]
+or
+https://github.com/YanWenKun/ComfyUI-Containerfiles/blob/main/dev-torch/Dockerfile[here].
 
 ### Preparation
+
+#### Git clone the repo
 
 [source,bash]
 ----
@@ -79,8 +86,7 @@ cd ComfyUI-3D-Pack
 pip install -r requirements.txt
 ----
 
-* *[IMPORTANT]* Fix for nvcc 12.x
-** Ref: https://github.com/pybind/pybind11/issues/4606
+#### (IMPORTANT) Fix pybind for nvcc 12.x
 
 [source,bash]
 ----
@@ -88,23 +94,29 @@ sed -i "s/return caster.operator typename make_caster<T>::template cast_op_type<
   /usr/lib64/python3.11/site-packages/torch/include/pybind11/cast.h
 ----
 
-* I only used one compile target "6.1+PTX" to save build time. It should be running fine on Pascal and later GPUs.
-You can add more if you want to squeeze more performance (not sure).
+* Ref: https://github.com/pybind/pybind11/issues/4606
+
+#### (Optional) Set build targets
+
+I used several build targets for compatibility. It should be running fine on GTX 900(Maxwell), GTX 1000(Pascal) and later GPUs.
+You can adjust the list to save build time, or squeeze out more performance (not sure).
 
 ** See https://arnon.dk/matching-sm-architectures-arch-and-gencode-for-various-nvidia-cards/[Arch List]
 
 [source,bash]
 ----
-export TORCH_CUDA_ARCH_LIST="6.1+PTX"
+export TORCH_CUDA_ARCH_LIST="5.2+PTX;6.0;6.1+PTX;7.5;8.0;8.6;8.9"
 ----
 
-* A side note, I also got this warning message:
+#### (Optional) Update simple-knn
+
+I got this warning message while building:
 
 ====
 simple-knn/spatial.cu:23:64: warning: ‘T* at::Tensor::data() const [with T = float]’ is deprecated: Tensor.data<T>() is deprecated. Please use Tensor.data_ptr<T>() instead. 
 ====
 
-It's fine to leave it. But I fixed that anyway.
+It's fine to leave it. But I fixed that anyway:
 
 [source,bash]
 ----
@@ -141,7 +153,10 @@ pip wheel -w /root/tmp_wheels \
 
 pip wheel -w /root/tmp_wheels \
  git+https://github.com/tatsy/torchmcubes.git
+----
 
+[source,bash]
+----
 # This step is redundant, you can skip it
 pip wheel -w /root/tmp_wheels \
  -r requirements_post.txt
