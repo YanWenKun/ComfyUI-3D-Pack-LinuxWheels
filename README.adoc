@@ -1,5 +1,14 @@
 # Wheel files for ComfyUI-3D-Pack on Linux
 
+Update:
+This repo is not needed any more.
+Just use wheels from Comfy3D:
+https://github.com/MrForExample/Comfy3D_Pre_Builds
+
+The doc remains, but it may be out of date.
+
+---
+
 This repo includes compiled Python wheel files, according to:
 
 https://github.com/MrForExample/ComfyUI-3D-Pack/blob/main/requirements_post.txt
@@ -94,6 +103,16 @@ cd ComfyUI-3D-Pack
 
 pip install -r requirements.txt
 ----
+
+#### (NO LONGER NEEDED) Fix pybind for nvcc 12.x
+
+[source,bash]
+----
+sed -i "s/return caster.operator typename make_caster<T>::template cast_op_type<T>()/return caster/g" \
+  /usr/lib64/python3.11/site-packages/torch/include/pybind11/cast.h
+----
+
+* Ref: https://github.com/pybind/pybind11/issues/4606
 
 #### (Optional) Set build targets
 
