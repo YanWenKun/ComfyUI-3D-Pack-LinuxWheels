@@ -9,21 +9,29 @@ https://github.com/MrForExample/ComfyUI-3D-Pack/blob/main/requirements_post.txt
 [source,sh]
 ----
 python3 -m pip install \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v2/diff_gaussian_rasterization-0.0.0-cp311-cp311-linux_x86_64.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v2/kiui-0.2.7-py3-none-any.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v2/nvdiffrast-0.3.1-py3-none-any.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v2/pointnet2_ops-3.0.0-cp311-cp311-linux_x86_64.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v2/pytorch3d-0.7.6-cp311-cp311-linux_x86_64.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v2/simple_knn-0.0.0-cp311-cp311-linux_x86_64.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v2/torch_scatter-2.1.2-cp311-cp311-linux_x86_64.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v2/torchmcubes-0.1.0-cp311-cp311-linux_x86_64.whl
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v3/pointnet2_ops-3.0.0-cp311-cp311-linux_x86_64.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v3/simple_knn-0.0.0-cp311-cp311-linux_x86_64.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v3/diff_gaussian_rasterization-0.0.0-cp311-cp311-linux_x86_64.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v3/nvdiffrast-0.3.1-py3-none-any.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v3/pytorch3d-0.7.7-cp311-cp311-linux_x86_64.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v3/torch_scatter-2.1.2-cp311-cp311-linux_x86_64.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v3/kiui-0.2.10-py3-none-any.whl
 ----
 
 Then try to run ComfyUI with 3D-Pack!
 
+NOTE: You can use
+https://github.com/rusty1s/pytorch_scatter?tab=readme-ov-file#binaries[PyTorch Scatter's official binaries] instead. Like:
+
+[source,bash]
+----
+pip install torch-scatter -f https://data.pyg.org/whl/torch-2.3.0+cu121.html
+----
+
+
 ## How to build
 
-You need:
+You will need:
 
 * Linux with Docker/Podman
 ** or Docker Desktop WSL2
@@ -62,8 +70,9 @@ podman run -it --rm \
   --device nvidia.com/gpu=all \
   --security-opt label=disable \
   --user root --workdir /root \
-  -e HTTP_PROXY=http://host.containers.internal:1081 \
-  -e HTTPS_PROXY=http://host.containers.internal:1081 \
+  --network=host \
+  -e HTTP_PROXY=http://localhost:1081 \
+  -e HTTPS_PROXY=http://localhost:1081 \
   docker.io/yanwk/comfyui-boot:megapak /bin/fish
 ----
 
@@ -85,16 +94,6 @@ cd ComfyUI-3D-Pack
 
 pip install -r requirements.txt
 ----
-
-#### (IMPORTANT) Fix pybind for nvcc 12.x
-
-[source,bash]
-----
-sed -i "s/return caster.operator typename make_caster<T>::template cast_op_type<T>()/return caster/g" \
-  /usr/lib64/python3.11/site-packages/torch/include/pybind11/cast.h
-----
-
-* Ref: https://github.com/pybind/pybind11/issues/4606
 
 #### (Optional) Set build targets
 
@@ -121,7 +120,7 @@ It's fine to leave it. But I fixed that anyway:
 [source,bash]
 ----
 sed -i "s/data<float>()/data_ptr<float>()/g" \
-  ./simple-knn/spatial.cu
+  ./Libs/simple-knn/spatial.cu
 ----
 
 ### Compile
@@ -131,10 +130,10 @@ Finally we can move on compiling
 [source,bash]
 ----
 pip wheel -w /root/tmp_wheels \
-  ./tgs/models/snowflake/pointnet2_ops_lib
+  ./gen_3d_modules/TriplaneGaussian/models/snowflake/pointnet2_ops_lib
 
 pip wheel -w /root/tmp_wheels \
- ./simple-knn
+ ./Libs/simple-knn
 
 pip wheel -w /root/tmp_wheels \
  git+https://github.com/ashawkey/diff-gaussian-rasterization
@@ -150,9 +149,6 @@ pip wheel -w /root/tmp_wheels \
 
 pip wheel -w /root/tmp_wheels \
  git+https://github.com/ashawkey/kiuikit.git
-
-pip wheel -w /root/tmp_wheels \
- git+https://github.com/tatsy/torchmcubes.git
 ----
 
 [source,bash]
