@@ -112,16 +112,6 @@ cd Comfy3D_Pre_Builds/_Libs
 
 ----
 
-#### (NO LONGER NEEDED) Fix pybind for nvcc 12.x
-
-[source,bash]
-----
-sed -i "s/return caster.operator typename make_caster<T>::template cast_op_type<T>()/return caster/g" \
-  /usr/lib64/python3.11/site-packages/torch/include/pybind11/cast.h
-----
-
-* Ref: https://github.com/pybind/pybind11/issues/4606
-
 #### (Optional) Set build targets
 
 I used several build targets for compatibility. It should be running fine on GTX 900(Maxwell), GTX 1000(Pascal) and later GPUs.
@@ -134,7 +124,17 @@ You can adjust the list to save build time, or squeeze out more performance (not
 export TORCH_CUDA_ARCH_LIST="5.2+PTX;6.0;6.1+PTX;7.5;8.0;8.6;8.9;9.0+PTX"
 ----
 
-#### (Optional) Update simple-knn
+#### (NO LONGER NEEDED) Fix pybind for nvcc 12.x
+
+[source,bash]
+----
+sed -i "s/return caster.operator typename make_caster<T>::template cast_op_type<T>()/return caster/g" \
+  /usr/lib64/python3.11/site-packages/torch/include/pybind11/cast.h
+----
+
+* Ref: https://github.com/pybind/pybind11/issues/4606
+
+#### (NO LONGER NEEDED) Update simple-knn
 
 I got this warning message while building:
 
