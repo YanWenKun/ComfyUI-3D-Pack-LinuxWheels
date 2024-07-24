@@ -121,7 +121,7 @@ You can adjust the list to save build time, or squeeze out more performance (not
 
 [source,bash]
 ----
-export TORCH_CUDA_ARCH_LIST="5.2+PTX;6.0;6.1+PTX;7.5;8.0;8.6;8.9;9.0+PTX"
+export TORCH_CUDA_ARCH_LIST="5.2+PTX;6.0;6.1+PTX;7.5;8.0;8.6;8.9+PTX"
 ----
 
 #### (NO LONGER NEEDED) Fix pybind for nvcc 12.x
