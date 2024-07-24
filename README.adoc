@@ -1,11 +1,11 @@
 # Wheel files for ComfyUI-3D-Pack on Linux
 
-Update:
-This repo is not needed any more.
-Just use wheels from Comfy3D:
+Update: +
+This repo is no longer needed.
+Now you can use pre-built wheels from Comfy3D: +
 https://github.com/MrForExample/Comfy3D_Pre_Builds
 
-The doc remains, but it may be out of date.
+The doc below may be out of date.
 
 ---
 
@@ -102,6 +102,14 @@ git clone --depth=1 --no-tags \
 cd ComfyUI-3D-Pack
 
 pip install -r requirements.txt
+
+cd ..
+
+git clone --depth=1 --no-tags \
+    https://github.com/MrForExample/Comfy3D_Pre_Builds.git
+
+cd Comfy3D_Pre_Builds/_Libs
+
 ----
 
 #### (NO LONGER NEEDED) Fix pybind for nvcc 12.x
@@ -123,7 +131,7 @@ You can adjust the list to save build time, or squeeze out more performance (not
 
 [source,bash]
 ----
-export TORCH_CUDA_ARCH_LIST="5.2+PTX;6.0;6.1+PTX;7.5;8.0;8.6;8.9"
+export TORCH_CUDA_ARCH_LIST="5.2+PTX;6.0;6.1+PTX;7.5;8.0;8.6;8.9;9.0+PTX"
 ----
 
 #### (Optional) Update simple-knn
@@ -139,7 +147,7 @@ It's fine to leave it. But I fixed that anyway:
 [source,bash]
 ----
 sed -i "s/data<float>()/data_ptr<float>()/g" \
-  ./Libs/simple-knn/spatial.cu
+  ./simple-knn/spatial.cu
 ----
 
 ### Compile
@@ -149,32 +157,33 @@ Finally we can move on compiling
 [source,bash]
 ----
 pip wheel -w /root/tmp_wheels \
-  ./gen_3d_modules/TriplaneGaussian/models/snowflake/pointnet2_ops_lib
+  ./pointnet2_ops
 
 pip wheel -w /root/tmp_wheels \
- ./Libs/simple-knn
+ ./simple-knn
 
 pip wheel -w /root/tmp_wheels \
- git+https://github.com/ashawkey/diff-gaussian-rasterization
+ git+https://github.com/ashawkey/diff-gaussian-rasterization.git
 
 pip wheel -w /root/tmp_wheels \
- git+https://github.com/NVlabs/nvdiffrast/
+ git+https://github.com/NVlabs/nvdiffrast.git
 
 pip wheel -w /root/tmp_wheels \
- git+https://github.com/facebookresearch/pytorch3d.git@stable
-
-pip wheel -w /root/tmp_wheels \
- git+https://github.com/rusty1s/pytorch_scatter.git
+ git+https://github.com/facebookresearch/pytorch3d.git
 
 pip wheel -w /root/tmp_wheels \
  git+https://github.com/ashawkey/kiuikit.git
+
+pip wheel -w /root/tmp_wheels \
+ git+https://github.com/rusty1s/pytorch_scatter.git
 ----
 
 [source,bash]
 ----
+# (Deprecated)
 # This step is redundant, you can skip it
-pip wheel -w /root/tmp_wheels \
- -r requirements_post.txt
+#pip wheel -w /root/tmp_wheels \
+# -r requirements_post.txt
 ----
 
 ### Copy wheels
