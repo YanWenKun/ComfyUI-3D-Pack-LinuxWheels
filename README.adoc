@@ -1,8 +1,7 @@
 # Wheel files for ComfyUI-3D-Pack on Linux
 
 Update: +
-This repo is no longer needed.
-Now you can use pre-built wheels from Comfy3D: +
+You can use pre-built wheels from Comfy3D: +
 https://github.com/MrForExample/Comfy3D_Pre_Builds
 
 The doc below may be out of date.
@@ -11,36 +10,32 @@ The doc below may be out of date.
 
 This repo includes compiled Python wheel files, according to:
 
-https://github.com/MrForExample/ComfyUI-3D-Pack/blob/main/requirements_post.txt
+* https://github.com/MrForExample/Comfy3D_Pre_Builds/tree/main/_Build_Wheels
+* https://github.com/MrForExample/ComfyUI-3D-Pack/tree/main/_Pre_Builds
 
-## How to use
+## How to install
 
 [source,sh]
 ----
 python3 -m pip install \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v3/pointnet2_ops-3.0.0-cp311-cp311-linux_x86_64.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v3/simple_knn-0.0.0-cp311-cp311-linux_x86_64.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v3/diff_gaussian_rasterization-0.0.0-cp311-cp311-linux_x86_64.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v3/nvdiffrast-0.3.1-py3-none-any.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v3/pytorch3d-0.7.7-cp311-cp311-linux_x86_64.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v3/torch_scatter-2.1.2-cp311-cp311-linux_x86_64.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v3/kiui-0.2.10-py3-none-any.whl
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v5/pointnet2_ops-3.0.0-cp312-cp312-linux_x86_64.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v5/simple_knn-0.0.0-cp312-cp312-linux_x86_64.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v5/diff_gaussian_rasterization-0.0.0-cp312-cp312-linux_x86_64.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v5/kiui-0.2.14-py3-none-any.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v5/nvdiffrast-0.3.3-py3-none-any.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v5/pytorch3d-0.7.8-cp312-cp312-linux_x86_64.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v5/torch_scatter-2.1.2-cp312-cp312-linux_x86_64.whl
 ----
 
 Then try to run ComfyUI with 3D-Pack!
 
-NOTE: You can use
-https://github.com/rusty1s/pytorch_scatter?tab=readme-ov-file#binaries[PyTorch Scatter's official binaries] instead. Like:
-
-[source,bash]
-----
-pip install torch-scatter -f https://data.pyg.org/whl/torch-2.3.0+cu121.html
-----
+NOTE: PyTorch Scatter has its
+https://github.com/rusty1s/pytorch_scatter?tab=readme-ov-file#binaries[official binaries]. We compile it here just for different combination of dependency versions.
 
 
-## How to build
+## How to build the wheels
 
-You will need:
+### 0. You need
 
 * Linux with Docker/Podman
 ** or Docker Desktop WSL2
@@ -50,13 +45,13 @@ You will need:
 https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html[NVIDIA Container Toolkit]
 installed and configured
 
-* (Optional, for Linux hosts)
-If you want to build automatically with a `Dockerfile`,
+* (Optional for Linux hosts)
+If you want to build automatically with a `Dockerfile` (not what we're doing here),
 you need to modify 
 https://stackoverflow.com/questions/59691207/docker-build-with-nvidia-runtime[runtime settings]
 on your host system, which allows GPU usage during image building.
 
-### Run a container with dev environment
+### 1. Run a container with dev environment
 
 I use `fish` here, you can safely replace it with `bash`
 
@@ -66,7 +61,7 @@ I use `fish` here, you can safely replace it with `bash`
 docker run -it \
   --name builder \
   --gpus all \
-  yanwk/comfyui-boot:megapak /bin/fish
+  yanwk/comfyui-boot:cu124-megapak-20241024 /bin/fish
 ----
 
 OR
@@ -82,40 +77,35 @@ podman run -it --rm \
   --network=host \
   -e HTTP_PROXY=http://localhost:1081 \
   -e HTTPS_PROXY=http://localhost:1081 \
-  docker.io/yanwk/comfyui-boot:megapak /bin/fish
+  docker.io/yanwk/comfyui-boot:cu124-megapak-20241024 /bin/fish
 ----
 
 If you want to build the builder image yourself, you can find the Dockerfile
-https://github.com/YanWenKun/ComfyUI-Docker/blob/main/megapak/Dockerfile[here]
-or
-https://github.com/YanWenKun/ComfyUI-Containerfiles/blob/main/dev-torch/Dockerfile[here].
+https://github.com/YanWenKun/ComfyUI-Docker/blob/main/cu124-megapak/Dockerfile[here].
 
-### Preparation
+### 2. Preparation
 
-#### Git clone the repo
+#### 2.1 Install deps
+
+[source,bash]
+----
+pip install -r https://raw.githubusercontent.com/MrForExample/ComfyUI-3D-Pack/refs/heads/main/requirements.txt
+----
+
+#### 2.2 Git clone the repo
 
 [source,bash]
 ----
 git clone --depth=1 --no-tags \
-    https://github.com/MrForExample/ComfyUI-3D-Pack.git
-
-cd ComfyUI-3D-Pack
-
-pip install -r requirements.txt
-
-cd ..
-
-git clone --depth=1 --no-tags \
     https://github.com/MrForExample/Comfy3D_Pre_Builds.git
 
 cd Comfy3D_Pre_Builds/_Libs
-
 ----
 
-#### (Optional) Set build targets
+#### 2.3 Set build targets
 
-I used several build targets for compatibility. It should be running fine on GTX 900(Maxwell), GTX 1000(Pascal) and later GPUs.
-You can adjust the list to save build time, or squeeze out more performance (not sure).
+I used several build targets for compatibility. It should be running fine on from GTX 900(Maxwell), GTX 1000(Pascal) to RTX 4000(Ada) and later GPUs.
+You can shorten the list to save build time.
 
 ** See https://arnon.dk/matching-sm-architectures-arch-and-gencode-for-various-nvidia-cards/[Arch List]
 
@@ -124,35 +114,22 @@ You can adjust the list to save build time, or squeeze out more performance (not
 export TORCH_CUDA_ARCH_LIST="5.2+PTX;6.0;6.1+PTX;7.5;8.0;8.6;8.9+PTX"
 ----
 
-#### (NO LONGER NEEDED) Fix pybind for nvcc 12.x
+#### 2.4 (Optional) Set CMake args
+
+This was used by
+https://github.com/MrForExample/ComfyUI-3D-Pack/blob/df3b12e3c4e329dc5a1a974412aa1ac118586ca9/_Pre_Builds/_Build_Scripts/auto_build_all.py#L46[Comfy3D's build script],
+but not necessary here.
 
 [source,bash]
 ----
-sed -i "s/return caster.operator typename make_caster<T>::template cast_op_type<T>()/return caster/g" \
-  /usr/lib64/python3.11/site-packages/torch/include/pybind11/cast.h
+export CMAKE_ARGS="-DBUILD_opencv_world=ON -DWITH_CUDA=ON -DCUDA_FAST_MATH=ON -DWITH_CUBLAS=ON -DWITH_NVCUVID=ON"
 ----
 
-* Ref: https://github.com/pybind/pybind11/issues/4606
+### 3. Compile
 
-#### (NO LONGER NEEDED) Update simple-knn
+#### 3.1 Part 1
 
-I got this warning message while building:
-
-====
-simple-knn/spatial.cu:23:64: warning: ‘T* at::Tensor::data() const [with T = float]’ is deprecated: Tensor.data<T>() is deprecated. Please use Tensor.data_ptr<T>() instead. 
-====
-
-It's fine to leave it. But I fixed that anyway:
-
-[source,bash]
-----
-sed -i "s/data<float>()/data_ptr<float>()/g" \
-  ./simple-knn/spatial.cu
-----
-
-### Compile
-
-Finally we can move on compiling
+These 5 wheels build fast, and are more likely to success.
 
 [source,bash]
 ----
@@ -166,27 +143,49 @@ pip wheel -w /root/tmp_wheels \
  git+https://github.com/ashawkey/diff-gaussian-rasterization.git
 
 pip wheel -w /root/tmp_wheels \
- git+https://github.com/NVlabs/nvdiffrast.git
-
-pip wheel -w /root/tmp_wheels \
- git+https://github.com/facebookresearch/pytorch3d.git
-
-pip wheel -w /root/tmp_wheels \
  git+https://github.com/ashawkey/kiuikit.git
 
+pip wheel -w /root/tmp_wheels \
+ git+https://github.com/NVlabs/nvdiffrast.git
+----
+
+#### 3.2 pytorch3d
+
+`pytorch3d` takes a bit more time to build, and may throw errors.
+
+[source,bash]
+----
+pip wheel -w /root/tmp_wheels \
+ git+https://github.com/facebookresearch/pytorch3d.git
+----
+
+If failed to build latest `pytorch3d`, try its stable version:
+
+[source,bash]
+----
+pip wheel -w /root/tmp_wheels \
+ git+https://github.com/facebookresearch/pytorch3d.git@stable
+----
+
+#### 3.3 pytorch_scatter
+
+`pytorch_scatter` takes much more time to build.
+
+[source,bash]
+----
 pip wheel -w /root/tmp_wheels \
  git+https://github.com/rusty1s/pytorch_scatter.git
 ----
 
+If failed to build latest `pytorch_scatter`, try its stable version:
+
 [source,bash]
 ----
-# (Deprecated)
-# This step is redundant, you can skip it
-#pip wheel -w /root/tmp_wheels \
-# -r requirements_post.txt
+pip wheel -w /root/tmp_wheels \
+ torch-scatter
 ----
 
-### Copy wheels
+### 4. Copy wheels
 
 Copy wheel files out of container, into current working folder
 
@@ -195,3 +194,8 @@ Copy wheel files out of container, into current working folder
 docker cp builder:/root/tmp_wheels/ .
 ----
 
+## Note
+
+Some steps (Fix pybind for nvcc 12.x, Update simple-knn) are no longer needed, check the
+https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/blob/7a78af579c5827cb1b485ebfea1e87fbee029d05/README.adoc[old README]
+if you just googled here.
