@@ -18,13 +18,13 @@ This repo includes compiled Python wheel files, according to:
 [source,sh]
 ----
 python3 -m pip install \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v5/pointnet2_ops-3.0.0-cp312-cp312-linux_x86_64.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v5/simple_knn-0.0.0-cp312-cp312-linux_x86_64.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v5/diff_gaussian_rasterization-0.0.0-cp312-cp312-linux_x86_64.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v5/kiui-0.2.14-py3-none-any.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v5/nvdiffrast-0.3.3-py3-none-any.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v5/pytorch3d-0.7.8-cp312-cp312-linux_x86_64.whl \
-  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v5/torch_scatter-2.1.2-cp312-cp312-linux_x86_64.whl
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v5.1/pointnet2_ops-3.0.0-cp312-cp312-linux_x86_64.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v5.1/simple_knn-0.0.0-cp312-cp312-linux_x86_64.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v5.1/diff_gaussian_rasterization-0.0.0-cp312-cp312-linux_x86_64.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v5.1/kiui-0.2.14-py3-none-any.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v5.1/nvdiffrast-0.3.3-py3-none-any.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v5.1/pytorch3d-0.7.8-cp312-cp312-linux_x86_64.whl \
+  https://github.com/YanWenKun/ComfyUI-3D-Pack-LinuxWheels/releases/download/v5.1/torch_scatter-2.1.2-cp312-cp312-linux_x86_64.whl
 ----
 
 Then try to run ComfyUI with 3D-Pack!
@@ -61,7 +61,7 @@ I use `fish` here, you can safely replace it with `bash`
 docker run -it \
   --name builder \
   --gpus all \
-  yanwk/comfyui-boot:cu124-megapak-20241024 /bin/fish
+  yanwk/comfyui-boot:cu124-megapak-20241031 /bin/fish
 ----
 
 OR
@@ -77,7 +77,7 @@ podman run -it --rm \
   --network=host \
   -e HTTP_PROXY=http://localhost:1081 \
   -e HTTPS_PROXY=http://localhost:1081 \
-  docker.io/yanwk/comfyui-boot:cu124-megapak-20241024 /bin/fish
+  docker.io/yanwk/comfyui-boot:cu124-megapak-20241031 /bin/fish
 ----
 
 If you want to build the builder image yourself, you can find the Dockerfile
